@@ -27,35 +27,41 @@
 #include <iostream>
 
 template <typename T, size_t N> class Graph : public MemRef<T, N> {
-	protected:
-		//the graph type and representation
-		uint16_t graph_type;
+protected:
+  // the graph type and representation
+  uint16_t graph_type;
 
-		//the count of number of edges added in the graph.
-		int edgeCount = 0;
-	
-		//adjacency list representation of graph.
-		std::vector<std::vector<T>> adjList;
-		
-		//weighted adjacency list representation of graph.
-		std::vector<std::vector<std::pair<T,T>>> adjList_weighted;
-	public:
-		//Constructor
-		Graph(uint16_t graph_type, size_t size);
+  // the count of number of edges added in the graph.
+  int edgeCount = 0;
 
-		//Function to add edges in graph.
-		void addEdge(T a, T b);
-		void addEdge(T Node1,T Node2, T EdgeWeight); 
+  // adjacency list representation of graph.
+  std::vector<std::vector<T>> adjList;
 
-		//Function to print the linear 2d graph.
-		void printGraphOg();
+  // incidence matrix representation of graph.
+  std::vector<std::vector<T>> incMat;
 
-		//converter from graph to MemRef_descriptor
-		MemRef_descriptor graph_to_MemRef_descriptor();
+  // weighted adjacency list representation of graph.
+  std::vector<std::vector<std::pair<T, T>>> adjList_weighted;
 
-		//Function to print the linear 2d graph after conversion.
-		void printGraph();
+  std::vector<std::vector<T>> adjMat;
+
+public:
+  // Constructor
+  Graph(uint16_t graph_type, size_t size);
+
+  // Function to add edges in graph.
+  void addEdge(T a, T b);
+  void addEdge(T Node1, T Node2, T EdgeWeight);
+
+  // Function to print the linear 2d graph.
+  void printGraphOg();
+
+  // converter from graph to MemRef_descriptor
+  MemRef_descriptor graph_to_MemRef_descriptor();
+
+  // Function to print the linear 2d graph after conversion.
+  void printGraph();
 };
 
 #include "Interface/GraphContainer.cpp"
-#endif // INTERFACE_GRAPHCONTAINER_H 
+#endif // INTERFACE_GRAPHCONTAINER_H
