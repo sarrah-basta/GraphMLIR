@@ -25,6 +25,7 @@
 #include "Interface/Container.h"
 #include "Interface/graph.h"
 #include <cstdint>
+#include <cmath>
 
 template <typename T, size_t N> Graph<T, N>::Graph(uint16_t graph_type, size_t size)
 {
@@ -39,18 +40,76 @@ template <typename T, size_t N> Graph<T, N>::Graph(uint16_t graph_type, size_t s
 	this->sizes[1] = size;
 	this->strides[0] = size;
 	this->strides[1] = size;
+	size_t maxEdges = ((this->size)*(this->size - 1))/2;
 	
 	//resize the adjacency list according to the number of nodes.
 	switch (graph_type) {
 		case graph::detail::GRAPH_ADJ_LIST_UNDIRECTED_UNWEIGHTED:
+			this->adjList.resize(this->size);
+			break;
 		case graph::detail::GRAPH_ADJ_LIST_DIRECTED_UNWEIGHTED:
 			this->adjList.resize(this->size);
 			break;
 
 		case graph::detail::GRAPH_ADJ_LIST_UNDIRECTED_WEIGHTED:
+			this->adjList_weighted.resize(this->size);
+			break;
 		case graph::detail::GRAPH_ADJ_LIST_DIRECTED_WEIGHTED:
 			this->adjList_weighted.resize(this->size);
 			break;
+
+		case graph::detail::GRAPH_INC_MATRIX_UNDIRECTED_UNWEIGHTED:
+			this->incMat.resize(this->size);
+			for(size_t i = 0; i < this->size; i++){
+				this->incMat[i].resize(maxEdges);
+			}
+			break;
+		case graph::detail::GRAPH_INC_MATRIX_DIRECTED_UNWEIGHTED:
+			this->incMat.resize(this->size);
+			for(size_t i = 0; i < this->size; i++){
+				this->incMat[i].resize(maxEdges);
+			}
+			break;
+		case graph::detail::GRAPH_INC_MATRIX_UNDIRECTED_WEIGHTED:
+			this->incMat.resize(this->size);
+			for(size_t i = 0; i < this->size; i++){
+				this->incMat[i].resize(maxEdges);
+			}
+			break;
+		case graph::detail::GRAPH_INC_MATRIX_DIRECTED_WEIGHTED:
+			this->incMat.resize(this->size);
+			for(size_t i = 0; i < this->size; i++){
+				this->incMat[i].resize(maxEdges);
+			}
+			break;
+		case graph::detail::GRAPH_ADJ_MATRIX_DIRECTED_WEIGHTED:
+            this->adjMat.resize(this->size);
+           for(size_t i =0;i<this->size;i++)
+           {
+            this->adjMat[i].resize(this->size);
+           }
+           break;
+        case graph::detail::GRAPH_ADJ_MATRIX_UNDIRECTED_WEIGHTED:
+             this->adjMat.resize(this->size);
+             for(size_t i =0;i<this->size;i++)
+             {
+                this->adjMat[i].resize(this->size);
+             } 
+             break;
+        case graph::detail::GRAPH_ADJ_MATRIX_DIRECTED_UNWEIGHTED:
+             this->adjMat.resize(this->size);
+             for(size_t i =0;i<this->size;i++)
+             {
+                this->adjMat[i].resize(this->size);
+             } 
+             break;     
+        case graph::detail::GRAPH_ADJ_MATRIX_UNDIRECTED_UNWEIGHTED:
+             this->adjMat.resize(this->size);
+             for(size_t i =0;i<this->size;i++)
+             {
+                this->adjMat[i].resize(this->size);
+             } 
+             break;
 
 		default:
 			std::cout<<"Unknown graph container"<<std::endl;
@@ -72,6 +131,53 @@ template <typename T, size_t N> void Graph<T, N>::addEdge(T Node1, T Node2)
 			this->edgeCount++;
 			break;
 		
+		case graph::detail::GRAPH_INC_MATRIX_UNDIRECTED_UNWEIGHTED:
+			this->incMat[Node1][edgeCount] = 1;
+			this->incMat[Node2][edgeCount] = 1;
+			this->edgeCount += 1;
+			break;
+
+		case graph::detail::GRAPH_INC_MATRIX_DIRECTED_UNWEIGHTED:
+			if(Node1 == Node2)
+			{
+				this->incMat[Node1][edgeCount] = 2;
+				this->incMat[Node2][edgeCount] = 2;	
+				this->edgeCount += 1;
+			}
+			else
+			{
+				this->incMat[Node1][edgeCount] = 1;
+				this->incMat[Node2][edgeCount] = -1;
+				this->edgeCount += 1;
+			}
+			break;
+		case graph::detail::GRAPH_ADJ_MATRIX_UNDIRECTED_UNWEIGHTED:
+           if(Node1==Node2)
+           {
+            this->adjMat[Node1][Node1] = 1;
+            this->edgeCount++;
+           }  
+           else
+           {
+            this->adjMat[Node1][Node2] = 1;
+            this->adjMat[Node2][Node1] = 1; 
+            this->edgeCount++;
+           }
+           break;
+
+        case graph::detail::GRAPH_ADJ_MATRIX_DIRECTED_UNWEIGHTED:
+           if(Node1==Node2)
+           {
+            this->adjMat[Node1][Node1] = 1;
+            this->edgeCount++;
+           }  
+           else
+           {
+            this->adjMat[Node1][Node2] = 1; 
+            this->edgeCount++;
+           }
+           break;
+
 		default:
 			this->edgeCount++;
 	}
@@ -89,6 +195,26 @@ template <typename T, size_t N> void Graph<T, N>::addEdge(T Node1,T Node2, T Edg
             this->adjList_weighted[Node1].push_back( std::make_pair(Node2, EdgeWeight));
             this->adjList_weighted[Node2].push_back( std::make_pair(Node1, EdgeWeight));
             break; 
+		case graph::detail::GRAPH_INC_MATRIX_UNDIRECTED_WEIGHTED:
+			this->edgeCount += 1;
+			this->incMat[Node1][edgeCount] = EdgeWeight;
+			this->incMat[Node2][edgeCount] = EdgeWeight;
+			break;
+		case graph::detail::GRAPH_INC_MATRIX_DIRECTED_WEIGHTED:
+			EdgeWeight = std::abs(sqrt(EdgeWeight));
+			this->incMat[Node1][edgeCount] = EdgeWeight;
+			this->incMat[Node2][edgeCount] = -EdgeWeight;
+			this->edgeCount += 1;
+			break;
+		case graph::detail::GRAPH_ADJ_MATRIX_DIRECTED_WEIGHTED:
+            this->edgeCount ++;
+            this->adjMat[Node1][Node2] = EdgeWeight;
+            break;
+        case graph::detail::GRAPH_ADJ_MATRIX_UNDIRECTED_WEIGHTED:
+            this->edgeCount++;
+            this->adjMat[Node1][Node2] = EdgeWeight;
+            this->adjMat[Node2][Node1] = EdgeWeight;
+            break;
     }
 }
 
@@ -121,6 +247,41 @@ template <typename T, size_t N> void Graph<T, N>::printGraphOg()
                     std::cout << " Weight(" << this->adjList_weighted[i].at(j).second <<") | ";
 				}
                 break;
+			case graph::detail::GRAPH_INC_MATRIX_DIRECTED_UNWEIGHTED:
+				for (T x : this->incMat[i]) {
+                    std::cout << x << "  ";
+                }
+                break;
+			case graph::detail::GRAPH_INC_MATRIX_UNDIRECTED_UNWEIGHTED:
+				for (T x : this->incMat[i]) {
+                    std::cout << x << " ";
+                }
+                break;
+			case graph::detail::GRAPH_INC_MATRIX_UNDIRECTED_WEIGHTED:
+				for (T x : this->incMat[i]) {
+                    std::cout << x << " ";
+                }
+                break;
+			case graph::detail::GRAPH_INC_MATRIX_DIRECTED_WEIGHTED:
+				for (T x : this->incMat[i])
+                    std::cout << x << " ";
+                break;
+						case graph::detail::GRAPH_ADJ_MATRIX_DIRECTED_WEIGHTED:
+			     for(T x : this->adjMat[i])	
+                     std::cout<<x<< " ";
+				 break;
+			case graph::detail::GRAPH_ADJ_MATRIX_UNDIRECTED_WEIGHTED:
+			     for(T x : this->adjMat[i])	
+                     std::cout<<x<< " ";
+				 break;	 
+			case graph::detail::GRAPH_ADJ_MATRIX_DIRECTED_UNWEIGHTED:
+			     for(T x : this->adjMat[i])	
+                     std::cout<<x<< " ";
+				 break;	
+			case graph::detail::GRAPH_ADJ_MATRIX_UNDIRECTED_UNWEIGHTED:
+			     for(T x : this->adjMat[i])	
+                     std::cout<<x<< " ";
+				 break;
         }
         std::cout << std::endl;
     }
@@ -128,7 +289,6 @@ template <typename T, size_t N> void Graph<T, N>::printGraphOg()
 
 template <typename T, size_t N> void Graph<T, N>::printGraph() 
 {
-	intptr_t size = this->size;
 	for (int v = 0; v < this->sizes[0]; ++v) {
 		for (int w = 0; w < this->sizes[1]; ++w) {
 			std::cout<<this->aligned[this->sizes[0]*v + w]<<" ";
@@ -144,6 +304,8 @@ MemRef_descriptor Graph<T, N>::graph_to_MemRef_descriptor()
 	intptr_t x = this->sizes[0];
 	intptr_t y = this->sizes[1];
 	T* linear = (T *)malloc(sizeof(T) * x * y);
+	size_t maxEdges = ((this->size)*(this->size - 1))/2;
+	T flag = -2;
 
 	for (intptr_t i = 0; i < x; i++){
 		for (intptr_t j = 0; j < y; j++) {
@@ -191,7 +353,144 @@ MemRef_descriptor Graph<T, N>::graph_to_MemRef_descriptor()
 				} 
 			} 
   			break;
-				
+
+		case graph::detail::GRAPH_INC_MATRIX_UNDIRECTED_UNWEIGHTED:
+			for (size_t j = 0; j < maxEdges; j++){
+				flag = -2;
+				for (size_t i = 0; i < this->incMat.size() && flag!=-1 ; i++){
+					if(this->incMat[i][j] == 1 && flag==-2)
+					{
+						flag = i;
+					}
+					else if (this->incMat[i][j] == 1 && flag!=-2)
+					{
+						linear[int(flag) * x + i] = 1;
+						linear[i * x + int(flag)] = 1;
+						flag = -1;
+					}
+					// covering corner case of self-loop
+					if (i == this->incMat.size() - 1 && (flag != -1 && flag != -2)){
+						linear[int(flag) * x + int(flag)] = 1;
+						flag = -1;
+					}
+				}
+			}
+			break;
+		case graph::detail::GRAPH_INC_MATRIX_UNDIRECTED_WEIGHTED:
+			for (size_t j = 0; j < maxEdges; j++){
+				flag = -2;
+				for (size_t i = 0; i < this->incMat.size() && flag!=-1 ; i++){
+					if(this->incMat[i][j] != 0 && flag==-2)
+					{
+						flag = i;
+					}
+					else if (this->incMat[i][j] != 0 && flag!=-2)
+					{
+						linear[int(flag) * x + i] = incMat[i][j];
+						linear[i * x + int(flag)] = incMat[i][j];
+						flag = -1;
+					}
+					// covering corner case of self-loop
+					if (i == this->incMat.size() - 1 && (flag != -1 && flag != -2)){
+						linear[int(flag) * x + int(flag)] = incMat[int(flag)][j];
+						flag = -1;
+					}
+				}
+			}
+			break;
+		case graph::detail::GRAPH_INC_MATRIX_DIRECTED_UNWEIGHTED:
+			for (size_t j = 0; j < maxEdges; j++){
+				flag = -2;
+				for (size_t i = 0; i < this->incMat.size() && flag!=-1 ; i++){
+					if((this->incMat[i][j] == 1 || this->incMat[i][j] == -1) && flag==-2)
+					{
+						flag = i;
+					}
+					else if ((this->incMat[i][j] == 1 || this->incMat[i][j] == -1) && flag!=-2)
+					{
+						if(this->incMat[i][j] == -1)
+						linear[int(flag) * x + i] = 1;
+						else
+						linear[i * x + int(flag)] = 1;
+						flag = -1;
+					}
+					// case for self loops
+					if (this->incMat[i][j] == 2){
+						linear[i * x + i] = 1;
+						flag = -1;
+					}
+				}
+			}
+			break;
+		case graph::detail::GRAPH_INC_MATRIX_DIRECTED_WEIGHTED:
+			for (size_t j = 0; j < maxEdges; j++){
+				flag = -2;
+				for (size_t i = 0; i < this->incMat.size() && flag!=-1 ; i++){
+					if((this->incMat[i][j] != 0) && flag==-2)
+					{	
+						flag = i;
+						size_t k;
+						for (k = flag+1; k < this->incMat.size() && flag!=-2 ; k++)
+						{
+							if((this->incMat[k][j] != 0) && flag!=-1)
+							{
+								if(this->incMat[k][j] < this->incMat[int(flag)][j])
+								linear[int(flag) * x + k] = pow(incMat[k][j],2);
+								else
+								linear[k * x + int(flag)] = pow(incMat[k][j],2);
+								flag = -1;
+							}
+						}
+						// case of self loop
+						if(k==incMat.size() && flag != -1)
+						{
+							linear[i * x + i] = pow(incMat[i][j],2);
+						}
+					}
+				}
+			}
+			break;
+		case graph::detail::GRAPH_ADJ_MATRIX_DIRECTED_UNWEIGHTED:
+            for(intptr_t i =0;i<x;++i)
+			{
+               for(intptr_t j =0;j<x;++j)
+			   {
+                   T n = adjMat[i][j];
+				   linear[i*x + j] = n;
+			   }
+			}
+			break;
+		case graph::detail::GRAPH_ADJ_MATRIX_DIRECTED_WEIGHTED:
+				for(intptr_t i =0;i<x;++i)
+				{
+				   for(intptr_t j =0;j<x;++j)
+				   {
+					   T n = adjMat[i][j];
+					   linear[i*x + j] = n;
+				   }
+				}
+			break;
+		case graph::detail::GRAPH_ADJ_MATRIX_UNDIRECTED_UNWEIGHTED:
+            	for(intptr_t i =0;i<x;++i)
+				{
+				   for(intptr_t j =0;j<x;++j)
+				   {
+					   T n = adjMat[i][j];
+					   linear[i*x + j] = n;
+				   }
+				}
+			break;
+		case graph::detail::GRAPH_ADJ_MATRIX_UNDIRECTED_WEIGHTED:
+				for(intptr_t i =0;i<x;++i)
+				{
+				   for(intptr_t j =0;j<x;++j)
+				   {
+					   T n = adjMat[i][j];
+					   linear[i*x + j] = n;
+				   }
+				}
+			break;
+
 		default:
 			std::cout<<"Unknown graph type"<<std::endl;
 			break;
