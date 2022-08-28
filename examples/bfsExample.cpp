@@ -9,21 +9,25 @@
 
 #include <Interface/graph.h>
 #include <Interface/memref.h>
+#include <Interface/Container.h>
+#include <Interface/GraphContainer.h>
+#include <vector>
 #include <iostream>
 
 int main() {
-  std::cout << "Reached here !!!\n";
 
-  float sample_graph1_array[9] = {1, 1, 1, 1, -8, 1, 1, 1, 1};
-  intptr_t sample_graph_length = 3;
-  intptr_t sample_graph_width = 3;
-  float *allocation_pointer = (float *)malloc(sizeof(float));
-  intptr_t sample_graph_sizes[2] = {sample_graph_width, sample_graph_length};
-  intptr_t sample_graph_strides[2] = {sample_graph_width, sample_graph_length};
 
-  MemRef_descriptor sample_graph =
-      MemRef_Descriptor(allocation_pointer, sample_graph1_array, 0,
-                        sample_graph_sizes, sample_graph_strides);
+Graph<float, 2> sample_graph(graph::detail::GRAPH_ADJ_MATRIX_DIRECTED_WEIGHTED, 5);
+sample_graph.addEdge(0,2,1);
+	sample_graph.addEdge(2,3,3);
+	sample_graph.addEdge(3,2,3);
+	sample_graph.addEdge(2,2,6);
+	sample_graph.addEdge(1,2,2);
+  std::cout<<"Printing graph in format it was entered ( GRAPH_ADJ_LIST_DIRECTED_WEIGHTED )\n";
+	sample_graph.printGraphOg();
 
-  graph::graph_bfs(sample_graph, sample_graph, sample_graph);
+	auto memref = sample_graph.graph_to_MemRef_descriptor();
+  std::cout<<"Printing graph in form of 2d matrix after conversion to memref\n";
+	sample_graph.printGraph();
+
 }

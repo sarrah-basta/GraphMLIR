@@ -33,11 +33,27 @@ extern "C" {
 void _mlir_ciface_bfs(MemRef_descriptor graph1, MemRef_descriptor graph2,
                       MemRef_descriptor graph3);
 }
+
+  enum graph_type {
+  GRAPH_ADJ_LIST_UNDIRECTED_UNWEIGHTED,
+  GRAPH_ADJ_LIST_UNDIRECTED_WEIGHTED,
+  GRAPH_ADJ_LIST_DIRECTED_UNWEIGHTED,
+  GRAPH_ADJ_LIST_DIRECTED_WEIGHTED,
+  GRAPH_ADJ_MATRIX_UNDIRECTED_UNWEIGHTED,
+  GRAPH_ADJ_MATRIX_UNDIRECTED_WEIGHTED,
+  GRAPH_ADJ_MATRIX_DIRECTED_UNWEIGHTED,
+  GRAPH_ADJ_MATRIX_DIRECTED_WEIGHTED,
+  GRAPH_INC_MATRIX_UNDIRECTED_UNWEIGHTED,
+  GRAPH_INC_MATRIX_UNDIRECTED_WEIGHTED,
+  GRAPH_INC_MATRIX_DIRECTED_UNWEIGHTED,
+  GRAPH_INC_MATRIX_DIRECTED_WEIGHTED,
+};
 } // namespace detail
 
 void graph_bfs(MemRef_descriptor graph1, MemRef_descriptor graph2,
                MemRef_descriptor graph3) {
   detail::_mlir_ciface_bfs(graph1, graph2, graph3);
+
 }
 } // namespace graph
 
