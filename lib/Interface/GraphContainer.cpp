@@ -527,10 +527,10 @@ MemRef_descriptor Graph<T, N>::graph_to_MemRef_descriptor()
 
 	this->aligned = linear;
 
-	MemRef_descriptor sample_graph_memref = MemRef_Descriptor(this->allocated, this->aligned, this->offset,
+	MemRef_descriptor graph_memref = MemRef_Descriptor(this->allocated, this->aligned, this->offset,
 							this->sizes, this->strides);
 
-	return sample_graph_memref;
+	return graph_memref;
 }
 
 #endif // INTERFACE_GRAPH_CONTAINER_DEF
