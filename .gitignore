@@ -6,3 +6,5 @@
 
 # IDEA configurations
 /.idea
+
+/docs*

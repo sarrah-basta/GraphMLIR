@@ -32,3 +32,8 @@ cmake -G Ninja .. \
 ninja bfsExample
 cd bin && ./bfsExample
 ```
+## For generating Docs in your system 
+
+```
+doxygen dconfig
+```

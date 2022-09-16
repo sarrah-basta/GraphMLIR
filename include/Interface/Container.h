@@ -26,10 +26,13 @@
 #include <memory>
 #include <stdint.h>
 #include <vector>
+/**
+ * @brief MemrefDescriptor class 
+ * 
+ * @tparam T Repesents the datatype used 
+ * @tparam N represents the number of dimensions.
+ */
 
-// MemRef descriptor.
-// - T represents the type of the elements.
-// - N represents the number of dimensions.
 template <typename T, size_t N> class MemRef {
 
 public:
