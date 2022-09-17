@@ -34,5 +34,7 @@ cd bin && ./bfsExample
 ```
 ## Instructions for generating docs 
 ```
-doxygen dconfig
+doxygen dconfig 
 ```
+#### After this go to docs  and open index.html in the html subdirectory with your prefered browser.
+
